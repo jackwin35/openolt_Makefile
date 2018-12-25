@@ -1,5 +1,5 @@
 diff --git a/agent/Makefile.in b/agent/Makefile.in
-index 29bdaf3..bcf363c 100644
+index 29bdaf3..6e91ade 100644
 --- a/agent/Makefile.in
 +++ b/agent/Makefile.in
 @@ -27,13 +27,13 @@ OPENOLTDEVICE ?= generic
@@ -20,7 +20,7 @@ index 29bdaf3..bcf363c 100644
  #
  # Build directory
  BUILD_DIR = build
-@@ -68,10 +68,14 @@ CXXFLAGSDEVICE = -I./device -I./device/$(OPENOLTDEVICE) -I./device/generic
+@@ -68,10 +68,23 @@ CXXFLAGSDEVICE = -I./device -I./device/$(OPENOLTDEVICE) -I./device/generic
  
  export CXX CXXFLAGS
  
@@ -34,11 +34,20 @@ index 29bdaf3..bcf363c 100644
 +	#sudo apt-get -q -y install git pkg-config build-essential autoconf libtool libgflags-dev libgtest-dev clang libc++-dev unzip docker.io
 +	#sudo apt-get install -y build-essential autoconf libssl-dev gawk debhelper dh-systemd init-system-helpers
  
++gcc43:
++	sudo apt-get install software-properties-common -y
++	sudo apt-get install gcc-4.9 g++-4.9 -y
++	sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 49 \
++		--slave /usr/bin/g++ g++ /usr/bin/g++-4.9 \
++		--slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-4.9 \
++		--slave /usr/bin/gcc-nm gcc-nm /usr/bin/gcc-nm-4.9 \
++		--slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-4.9 
++
 +prereq:
  	# Install GRPC, libprotobuf and protoc
  	rm -rf $(GRPC_DST)
  	git clone -b $(GRPC_VER) $(GRPC_ADDR) $(GRPC_DST)
-@@ -103,11 +107,12 @@ ONL_DIR = $(BUILD_DIR)/$(ONL_REPO)
+@@ -103,11 +116,12 @@ ONL_DIR = $(BUILD_DIR)/$(ONL_REPO)
  onl:
  	if [ ! -d "$(ONL_DIR)/OpenNetworkLinux" ]; then \
  		mkdir -p $(ONL_DIR); \
@@ -54,7 +63,7 @@ index 29bdaf3..bcf363c 100644
  distclean-onl:
  	sudo rm -rf $(ONL_DIR)
  
-@@ -122,7 +127,7 @@ SDK_ZIP = sdk-all-$(SDK_VER).tar.gz
+@@ -122,7 +136,7 @@ SDK_ZIP = sdk-all-$(SDK_VER).tar.gz
  ACCTON_PATCH = ACCTON_BAL_$(BAL_VER)-V$(DEV_VER).patch
  OPENOLT_BAL_PATCH = OPENOLT_BAL_$(BAL_VER).patch
  BAL_DIR = $(BUILD_DIR)/$(OPENOLTDEVICE)-bal
@@ -63,7 +72,7 @@ index 29bdaf3..bcf363c 100644
  MAPLE_KERNDIR = $(BAL_DIR)/bcm68620_release/$(OPENOLTDEVICE)/kernels
  BCM_SDK = $(BAL_DIR)/bal_release/3rdparty/bcm-sdk
  BALLIBDIR = $(BAL_DIR)/bal_release/build/core/src/apps/bal_api_dist_shared_lib
-@@ -155,23 +160,23 @@ ifeq ("$(wildcard $(BAL_DIR))","")
+@@ -155,23 +169,23 @@ ifeq ("$(wildcard $(BAL_DIR))","")
  	chmod -R 744 $(BAL_DIR)
  	cat download/$(ACCTON_PATCH) | patch -p1 -d $(BAL_DIR)
  	mkdir -p $(MAPLE_KERNDIR)
@@ -92,7 +101,7 @@ index 29bdaf3..bcf363c 100644
  	make -C $(BAL_DIR)/bal_release BOARD=$(OPENOLTDEVICE) release_board
  
  bal-clean:
-@@ -242,8 +247,8 @@ DEPS = $(SRCS:.cc=.d)
+@@ -242,8 +256,8 @@ DEPS = $(SRCS:.cc=.d)
  all: $(BUILD_DIR)/openolt
  $(BUILD_DIR)/openolt: sdk protos $(OBJS)
  	$(CXX) $(LDFLAGS) -L$(BALLIBDIR) $(OBJS) $(OPENOLT_API_LIB) $(LIBPROTOBUF_PATH)/libprotobuf.a -o $@ -l$(BALLIBNAME) $(shell pkg-config --libs protobuf grpc++ grpc)
