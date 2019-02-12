@@ -29,7 +29,7 @@ index 29bdaf3..6e91ade 100644
 -	sudo apt-get install -y build-essential autoconf libssl-dev gawk debhelper dh-systemd init-system-helpers
 +prereq_pkg:
 +	sudo apt-get -q -y install git pkg-config build-essential autoconf libtool libgflags-dev libgtest-dev clang libc++-dev
-+	sudo apt-get -q -y install libelf-dev libelf-devel elfutils libelf-devel debhelper
++	sudo apt-get -q -y install debhelper curl
 +
 +	#sudo apt-get -q -y install git pkg-config build-essential autoconf libtool libgflags-dev libgtest-dev clang libc++-dev unzip docker.io
 +	#sudo apt-get install -y build-essential autoconf libssl-dev gawk debhelper dh-systemd init-system-helpers
